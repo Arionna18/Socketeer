@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Info Page with Nav</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial', sans-serif;
+    }
+
+    body {
+      line-height: 1.6;
+      color: #333;
+    }
+
+    /* Navbar */
+    nav {
+    background: linear-gradient(to bottom, #322CFF,#6BC4FF);
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    nav .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+    }
+
+    nav ul li a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: color 0.3s;
+    }
+
+    nav ul li a:hover {
+      color: #00bfff;
+    }
+
+    /* Sections */
+    section {
+    background-color:#6BC4FF ;
+      padding: 60px 20px;
+      max-width: 2000px;
+      margin: auto;
+    }
+
+    section h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: white;
+    }
+
+    section p {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: white;
+    }
+
+    /* Footer */
+    footer {
+    background:#322CFF;
+      color: white;
+      text-align: center;
+      padding: 40px;
+      margin-top: 40px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      nav ul {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">Sockeeter</div>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="Chat.html">Chat</a></li>
+      <li><a href="Login.html">Login</a></li>
+    </ul>
+  </nav>
+
+  <section id="home">
+    <h2>Welcome to Our Site</h2>
+    <p>This is a Real-Time messaging app that is intended to allow a users to create a profile and sign into the profile. Once a user creates a profile the user should be able to create and join chat rooms. When in the chat room a user can send and receive messages from other users and send to other users that are also signed into the platform.
+    </p>
+  </section>
+
+  <section id="How To Install">
+    <h2>How To Install</h2>
+    <p>This app is run through a web browser. To get the app running, clone the github repository or extract the .zip file. Next you will need to activate a python environment, and utilizing the ‘pip install -r requirements.txt’ command, you can install all of the dependencies for the project. From there, the only command that needs to be run is ‘python manage.py runserver’, which will allow you to navigate to your local IP address in your browser to see the app.
+    </p>
+  </section>
+
+  <footer>
+    &copy; 2025 MySite. All rights reserved.
+  </footer>
+
+</body>
+</html>
