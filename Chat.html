@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% load static %}
+        <meta charset="UTF-8">
+        <meta name="viewportt" content="width=device-width, initial-scale=1.0">
+
+        <title>{% block title %}Socketeer{% endblock %}</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        
+        <div class="container">
+            <nav class="sidebar">
+                <h2>Socketeer</h2>
+                <ul class="room-list">
+                    {% for r in rooms %}
+                        <li><a href="{% url 'chat_room' r.name %}">{{ r.name|title }}</a></li>
+                    {% empty %}
+                        <li>No rooms yet</li>
+                    {% endfor %}
+                </ul>
+                <button onclick="toggleModal()" clas="create-room-btn">+ Create Room</button>
+                <a href ="{% url 'logout' %}" style="color:white; display:block; margin-top:20px;">Logout</a>
+            </nav>
+            <div class="chat-main">
+                <div class="chat-header">
+                    <h2>{{ room.name|title }}</h2>
+                </div>
+                <div id="chat-box">
+                    <div id="messages">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <p><strong>{{ message.user }}</strong>: {{ message.text }}</p>
+                            {% endfor %}
+                        {% else %}
+                            <p id="no-messages">No messages yet. Start the conversation!</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <form id="message-form">
+                    <input type="text" name="message" placeholder="Type your message..." autocomplete="off" required>
+                    <button type="submit">Send</button>
+                </form>
+            </div>
+            <div class="right-panel">
+                <h3>Active Users</h3>
+                <ul id="active-users">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="roomModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="toggleModal()">&times;</span>
+            <h3>Create A New Room</h3>
+            <form method="post" action="{% url 'create_room' %}">
+                {% csrf_token %}
+                <input type="text" name="room_name" placeholder="Room name" required>
+                <button type="submit">Create</button>
+            </form>
+        </div> 
+    </div> 
+        <script>
+            function toggleModal() {
+                const modal = document.getElementById('roomModal');
+                const isVisible = modal.style.display === 'flex';
+                modal.style.display = isVisible ? 'none' : 'flex';
+            }
+        
+            window.onclick = function(event) {
+                const modal = document.getElementById('roomModal');
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+    
+                const roomName = "{{ room.name }}";
+                const userList = document.getElementById('active-users');
+                userList.innerHTML = '';
+    
+                const chatSocket = new WebSocket(
+                    'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
+                );
+    
+                chatSocket.onmessage = function(e) {
+                    const data = JSON.parse(e.data);
+
+                    if (data.type === 'chat_message') {
+                    const chatBox = document.getElementById('chat-box');
+                    const messageEl = document.createElement('div');
+                    messageEl.innerHTML = `<strong>${data.username}</strong>: ${data.message}`;
+                    const placeholder = document.getElementById('no-messages');
+                    if (placeholder) {
+                        placeholder.remove();
+                    }
+                    chatBox.appendChild(messageEl);
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                    } else if (data.type === 'user_join') { // Update active user list
+                        if (!document.getElementById(`user-${data.username}`)) {
+                        const li = document.createElement('li');
+                        li.id = `user-${data.username}`;
+                        li.textContent = data.username;
+                        userList.appendChild(li);
+                        }
+                    } else if (data.type === 'user_leave') {
+                        const userEl = document.getElementById(`user-${data.username}`);
+                        if (userEl) {
+                            userEl.remove();
+                        }
+                    }
+                };
+    
+                chatSocket.onclose = function(e) {
+                    console.error('Chat socket closed unexpectedly');
+                };
+    
+                const form = document.getElementById('message-form');
+                const input = form.querySelector('input[name="message"]');
+    
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const message = input.value.trim();
+                    if (message.length > 0) {
+                        chatSocket.send(JSON.stringify({ message: message }));
+                        input.value = '';
+                    }
+                });
+            });
+        </script>
+        </body>
+    </body>
+    
+</html>
